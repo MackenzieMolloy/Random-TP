@@ -1,0 +1,10 @@
+name: Rtp
+version: @version@
+main: com.patrity.rtp.Rtp
+api-version: 1.16
+prefix: Random TP
+commands:
+  rtp:
+    description: Allows the user to teleport to a random location
+    usage: /rtp
+    permission: rtp.teleport

@@ -1,0 +1,6 @@
+boundaries:
+  max-x: 1000
+  min-x: -1000
+  max-z: 1000
+  min-z: -1000
+  world: none
