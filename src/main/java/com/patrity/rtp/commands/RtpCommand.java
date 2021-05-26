@@ -47,6 +47,7 @@ public class RtpCommand implements CommandExecutor {
             getLoc(player);
         else {
             player.teleport(new Location(worldTp, x, y + 2, z));
+            player.sendMessage(Rtp.SINGLETON.config.getString("tp-msg"));
             Rtp.SINGLETON.logger.info(player.getLocation().toString());
         }
     }
