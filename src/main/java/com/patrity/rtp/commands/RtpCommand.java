@@ -15,14 +15,11 @@ public class RtpCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            Location location = getLoc(player);
-            player.teleport(location);
-            player.sendMessage("Whoosh!");
-            Rtp.SINGLETON.logger.info(player.getLocation().toString());
+            getLoc(player);
         }
         return true;
     }
-    private Location getLoc(Player player) {
+    private void getLoc(Player player) {
         ConfigurationSection bounds = Rtp.SINGLETON.config.getConfigurationSection("boundaries");
         assert bounds != null;
         int maxX = bounds.getInt("max-x");
@@ -44,8 +41,14 @@ public class RtpCommand implements CommandExecutor {
 
         int x = random(minX, maxX);
         int z = random(minZ, maxZ);
-        int y = player.getWorld().getHighestBlockYAt(x, z) + 2;
-        return new Location(worldTp, x, y ,z);
+        int y = player.getWorld().getHighestBlockYAt(x, z);
+        Location location = new Location(worldTp, x, y - 1, z);
+        if (location.getBlock().isLiquid())
+            getLoc(player);
+        else {
+            player.teleport(new Location(worldTp, x, y + 2, z));
+            Rtp.SINGLETON.logger.info(player.getLocation().toString());
+        }
     }
 
     private int random(int min, int max) {
