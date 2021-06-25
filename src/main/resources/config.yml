@@ -1,7 +1,24 @@
-tp-msg: "Whoosh!!"
+messages:
+  no-permission: "&cSorry, you do not have permission."
+  reloaded-config: "&aConfig reloaded."
+  teleported: "&cBOOM! &7You have been teleported to a random location."
+  world-not-allowed: "&cSorry, but the world you are in is not setup for random telelportation."
+  location-not-found: "&cSorry, but a suitable location could not be found. Please try again :("
+
 boundaries:
-  max-x: 1000
-  min-x: -1000
-  max-z: 1000
-  min-z: -1000
-  world: none
+  # The world where the command was executed
+  world:
+    # Minimum Teleportation cords
+    min:
+      x: -1000
+      z: -1000
+    # Maximum Telelport cords
+    max:
+      x: 1000
+      z: 1000
+    # World player is randomly teleported into
+    world: world
+
+options:
+  # The amount of times it'll check for a suitable location before it gives-up
+  re-check-locations: 15

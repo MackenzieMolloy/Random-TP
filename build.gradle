@@ -1,43 +1,29 @@
-import org.apache.tools.ant.filters.ReplaceTokens
-
 plugins {
     id 'java'
+    id "com.github.johnrengelman.shadow" version "5.0.0"
 }
 
-group = 'com.patrity'
-version = '1.0-SNAPSHOT'
-
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+group 'com.patrity'
+version '1.0'
+//sourceCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
     mavenCentral()
-    maven {
-        name = 'spigotmc-repo'
-        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
-    }
-    maven {
-        name = 'sonatype'
-        url = 'https://oss.sonatype.org/content/groups/public/'
-    }
+    mavenLocal()
+    maven({ url = "https://papermc.io/repo/repository/maven-public/" })
+    maven { url 'https://jitpack.io' }
+
 }
 
 dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT'
+
 }
 
-processResources {
-    from(sourceSets.main.resources.srcDirs) {
-        filter ReplaceTokens, tokens: [version: version]
-    }
-    //create a single Jar with all dependencies
-    task fatJar(type: Jar) {
-        manifest {
-            attributes 'Implementation-Title': 'Project',
-                    'Main-Class': 'Main'
-        }
-        baseName = project.name + '-all'
-        from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-        with jar
-    }
+
+shadowJar {
+    minimize()
+
 }
+
+tasks.build.dependsOn tasks.shadowJar

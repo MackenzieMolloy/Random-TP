@@ -1,10 +1,14 @@
 name: Rtp
-version: @version@
+version: 1.0
 main: com.patrity.rtp.Rtp
-api-version: 1.16
+api-version: 1.13
 prefix: Random TP
+authors: ["Patrity", "Mackenzie Molloy"]
 commands:
   rtp:
     description: Allows the user to teleport to a random location
     usage: /rtp
     permission: rtp.teleport
+  rtp-reload:
+    description: Reloads config
+    permission: rtp.reload

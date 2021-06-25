@@ -1,28 +1,33 @@
 package com.patrity.rtp;
 
+import com.patrity.rtp.Utilities.CommentedConfiguration;
 import com.patrity.rtp.commands.RtpCommand;
+import com.patrity.rtp.commands.RtpReloadCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 import java.util.logging.Logger;
 
 public final class Rtp extends JavaPlugin {
 
-    public static Rtp SINGLETON;
+    public static Rtp RandomTeleport;
     public Logger logger = Bukkit.getLogger();
-    public Configuration config;
+
+    public CommentedConfiguration configFile;
+
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
-        Rtp.SINGLETON = this;
-        loadConfig();
-        Objects.requireNonNull(this.getCommand("rtp")).setExecutor(new RtpCommand());
+        Rtp.RandomTeleport = this;
+        this.generateFiles();
+
+        Objects.requireNonNull(this.getCommand("rtp")).setExecutor(new RtpCommand(this));
+        this.getCommand("rtp-reload").setExecutor(new RtpReloadCommand(this));
         logger.info("[" + this.getName() + "] Finished Loading");
-        logger.info("Max-x: " + config.getConfigurationSection("boundaries").getInt("max-x"));
     }
 
     @Override
@@ -30,20 +35,33 @@ public final class Rtp extends JavaPlugin {
         // Plugin shutdown logic
     }
 
-    public void loadConfig() {
-        logger.info("[" + this.getName() + "]Loading Configuration...");
-        File dir = getDataFolder();
-        if (!dir.exists()) {
-            if (dir.mkdir()) {
-                getLogger().info("[" + this.getName() + "] First run detected, creating data folder");
-                this.saveDefaultConfig();
-                getConfig().options().copyDefaults(true);
-                saveConfig();
-            } else {
-                getLogger().warning("[" + this.getName() + "] Data folder creation failed");
-            }
+    /*
+        Generates configuration files
+     */
+    public void generateFiles() {
+
+        saveDefaultConfig();
+
+        File file = new File(getDataFolder(), "config.yml");
+        configFile = CommentedConfiguration.loadConfiguration(file);
+
+        try {
+            configFile.syncWithConfig(file, getResource("config.yml"), "ignore");
         }
-        config = getConfig();
-        logger.info("[" + this.getName() + "]Configuration Loaded!");
+        catch(IOException ex) {
+            ex.printStackTrace();
+        }
+
     }
+
+    public void saveFiles() {
+
+        try {
+            configFile.save(new File(getDataFolder(), "config.yml"));
+        } catch(IOException ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
 }
