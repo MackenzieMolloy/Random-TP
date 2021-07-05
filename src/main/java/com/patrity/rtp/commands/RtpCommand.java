@@ -65,7 +65,7 @@ public class RtpCommand implements CommandExecutor {
 
         int x = random(minX, maxX);
         int z = random(minZ, maxZ);
-        int y = player.getWorld().getHighestBlockYAt(x, z);
+        int y = worldTp.getHighestBlockYAt(x, z);
 
         Location location = new Location(worldTp, x, y, z);
 
@@ -84,7 +84,7 @@ public class RtpCommand implements CommandExecutor {
 
                 x = random(minX, maxX);
                 z = random(minZ, maxZ);
-                y = player.getWorld().getHighestBlockYAt(x, z);
+                y = worldTp.getHighestBlockYAt(x, z);
                 location = new Location(worldTp, x, y, z);
 
 
