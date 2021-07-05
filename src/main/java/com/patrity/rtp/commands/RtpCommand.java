@@ -1,14 +1,21 @@
 package com.patrity.rtp.commands;
 
 import com.patrity.rtp.Rtp;
+import jdk.nashorn.internal.ir.BlockStatement;
 import org.apache.commons.lang.ObjectUtils;
 import org.bukkit.*;
+import org.bukkit.block.data.Waterlogged;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 public class RtpCommand implements CommandExecutor {
@@ -21,12 +28,13 @@ public class RtpCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            getLoc(player);
+            getLoc(player, args);
+            //else if(args[0].equalsIgnoreCase("-d") && player.hasPermission("rtp.admin")) getLoc(player, true);
         }
         return true;
     }
 
-    private void getLoc(Player player) {
+    private void getLoc(Player player, String args[]) {
 
         // Check if player does not have permission to use the command
         if (!player.hasPermission("rtp.teleport")) {
@@ -62,7 +70,7 @@ public class RtpCommand implements CommandExecutor {
         Location location = new Location(worldTp, x, y, z);
 
         int loopRepeats = 0;
-        if(location.getBlock().isLiquid()) {
+        if(location.getBlock().isLiquid() || location.getBlock().getBlockData() instanceof Waterlogged || location.getBlock().isPassable()) {
             do {
 
                 if (loopRepeats >= RandomTeleport.configFile.getInt("options.re-check-locations")) {
@@ -80,10 +88,41 @@ public class RtpCommand implements CommandExecutor {
                 location = new Location(worldTp, x, y, z);
 
 
-            } while (location.getBlock().isLiquid());
+            } while (location.getBlock().isLiquid() || location.getBlock().getBlockData() instanceof Waterlogged || location.getBlock().isPassable());
         }
 
-        player.teleport(new Location(worldTp, x+0.5, y + 2, z+0.5));
+        if(args.length != 0) {
+
+            List<String> stringList = new ArrayList<String>(Arrays.asList(args));
+
+            if(stringList.contains("-c")) {
+                player.sendMessage(x + "/" + y + "/" + z);
+            }
+
+            if(stringList.contains("-d") && player.hasPermission("rtp.admin")) {
+                location.getBlock().setType(Material.GOLD_BLOCK);
+            }
+            if(stringList.contains("-a") && player.hasPermission("rtp.admin")) {
+
+                Location playerLoc = player.getLocation();
+
+                player.sendMessage("Passable: " + playerLoc.getBlock().isPassable() + "\nBlock Waterlogged: " + (playerLoc.getBlock().getBlockData() instanceof Waterlogged) + "\nLiquid: " + playerLoc.getBlock().isLiquid() + "\nLocation: "
+                        + playerLoc.getX() + "/" + playerLoc.getY() + "/" + playerLoc.getZ());
+                return;
+            }
+
+        }
+
+        if(RandomTeleport.configFile.getBoolean("options.fall.enabled")) {
+            player.teleport(new Location(worldTp, x + 0.5, y + RandomTeleport.configFile.getDouble("options.fall.hight"), z + 0.5));
+
+            PotionEffect slowFall = new PotionEffect(PotionEffectType.SLOW_FALLING, RandomTeleport.configFile.getInt("options.fall.effect-time")*20,1,true,false,false);
+            player.addPotionEffect(slowFall);
+        }
+        else {
+            player.teleport(new Location(worldTp, x + 0.5, y + 2, z + 0.5));
+        }
+
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', RandomTeleport.configFile.getString("messages.teleported")));
 
     }

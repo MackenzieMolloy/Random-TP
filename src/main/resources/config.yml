@@ -22,3 +22,8 @@ boundaries:
 options:
   # The amount of times it'll check for a suitable location before it gives-up
   re-check-locations: 15
+  # Slow-falling and highted drop
+  fall:
+    enabled: true
+    hight: 15
+    effect-time: 15

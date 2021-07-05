@@ -8,6 +8,7 @@ commands:
   rtp:
     description: Allows the user to teleport to a random location
     usage: /rtp
+    aliases: [wild, randomtp]
     permission: rtp.teleport
   rtp-reload:
     description: Reloads config
